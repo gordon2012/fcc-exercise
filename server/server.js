@@ -5,8 +5,12 @@ import bodyParser from 'body-parser';
 import React from 'react';
 import { renderToString } from 'react-dom/server';
 
+// Database
 import connect from './connect';
-import Foobar from './models/foobar';
+import User from './models/user';
+import Exercise from './models/Exercise';
+
+// Front end
 import App from '../common/App';
 
 dotenv.config();
@@ -48,19 +52,33 @@ app.get('/', function(req, res) {
   res.send(html);
 });
 
-app.get('/api/:input?', function(req, res) {
-  const { input } = req.params;
-
-  res.json({ method: 'get', ...(input ? { input } : {}) });
+// TODO: Get all users
+app.get('/api/exercise/users', function(req, res) {
+  res.json({ get: 'all users' });
 });
 
-app.post('/api/post', async (req, res) => {
-  try {
-    const doc = await Foobar.create(req.body);
-    res.json(doc);
-  } catch (e) {
-    console.error(e);
-  }
+// TODO: Get exercises for a user
+app.get('/api/exercise/log/:userId', function(req, res) {
+  const { userId } = req.params;
+  res.json({ get: `exercise log for user ${userId}` });
+});
+
+// TODO: Add a user
+app.post('/api/exercise/new-user', async (req, res) => {
+  const { username } = req.body;
+  res.json({ post: `new user ${username}` });
+  // try {
+  //   const doc = await Foobar.create(req.body);
+  //   res.json(doc);
+  // } catch (e) {
+  //   console.error(e);
+  // }
+});
+
+// TODO: Add an exercise to a user
+app.post('/api/exercise/add', async (req, res) => {
+  const { _id } = req.body;
+  res.json({ post: `exercise log to user ${_id}` });
 });
 
 export default app;

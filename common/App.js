@@ -6,25 +6,49 @@ class App extends Component {
     responses: []
   };
 
-  handleGetFormSubmit = async event => {
+  clearExercises = () => {
+    this.getExercisesRef.reset();
+  };
+
+  clearPostUser = () => {
+    this.postUserRef.reset();
+  };
+
+  clearPostExercise = () => {
+    this.postExerciseRef.reset();
+  };
+
+  // Handlers
+  handleGetUsersSubmit = async event => {
+    event.preventDefault();
+
+    const response = await fetch(`api/exercise/users`);
+    const json = await response.json();
+
+    this.setState({
+      responses: [JSON.stringify(json), ...this.state.responses]
+    });
+  };
+
+  handleGetExercisesSubmit = async event => {
     event.preventDefault();
 
     const data = new FormData(event.target);
-    const response = await fetch(`api/${data.get('get')}`);
+    const response = await fetch(`api/exercise/log/${data.get('userId')}`);
     const json = await response.json();
 
     this.setState({
       responses: [JSON.stringify(json), ...this.state.responses]
     });
 
-    this.handleGetFormClear();
+    this.clearExercises();
   };
 
-  handlePostFormSubmit = async event => {
+  handlePostUserSubmit = async event => {
     event.preventDefault();
 
     const data = new URLSearchParams(new FormData(event.target));
-    const response = await fetch(`api/post`, {
+    const response = await fetch(`api/exercise/new-user`, {
       method: 'POST',
       body: data
     });
@@ -34,20 +58,31 @@ class App extends Component {
       responses: [JSON.stringify(json), ...this.state.responses]
     });
 
-    this.handlePostFormClear();
+    this.clearPostUser();
   };
 
-  handleGetFormClear = () => {
-    this.getFormRef.reset();
-  };
+  handlePostExerciseSubmit = async event => {
+    event.preventDefault();
 
-  handlePostFormClear = () => {
-    this.postFormRef.reset();
+    const data = new URLSearchParams(new FormData(event.target));
+    const response = await fetch(`api/exercise/add`, {
+      method: 'POST',
+      body: data
+    });
+    const json = await response.json();
+
+    this.setState({
+      responses: [JSON.stringify(json), ...this.state.responses]
+    });
+
+    this.clearPostExercise();
   };
 
   handleResponsesClear = () => {
     this.setState({ responses: [] });
   };
+
+  // Life Cycle
 
   render() {
     return (
@@ -97,18 +132,31 @@ class App extends Component {
               <code className="response">{`{"_id":"5c0c64aaa9e30b02b4aa71ea", "description":"Deep Squats", "duration":"5", "date":"2018-12-01"}`}</code>
             </div>
 
-            {/* Get Log Form */}
+            {/* Get all users */}
             <div className="card">
-              <h2 className="masthead">Retrieve a users's exercise log</h2>
+              <h2 className="masthead">Get all users</h2>
+              <form onSubmit={this.handleGetUsersSubmit}>
+                <code className="response">{`GET /api/exercise/users`}</code>
+                <div className="buttons">
+                  <div>
+                    <button>Submit</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+
+            {/* Get exercises for a user */}
+            <div className="card">
+              <h2 className="masthead">Get exercises for a user</h2>
               <form
-                ref={form => (this.getFormRef = form)}
-                onSubmit={this.handleGetFormSubmit}
+                ref={form => (this.getExercisesRef = form)}
+                onSubmit={this.handleGetExercisesSubmit}
               >
-                <code className="response">{`GET /api/exercise/log?`}</code>
+                <code className="response">{`GET /api/exercise/log/:userId`}</code>
                 <code className="response">
-                  <label htmlFor="get">
-                    <span>{`{userId}[&from][&to][&limit]`}</span>
-                    <input type="text" id="get" name="get" />
+                  <label htmlFor="userId">
+                    <span>{`userId[&from][&to][&limit]`}</span>
+                    <input type="text" id="userId" name="userId" />
                   </label>
                 </code>
                 <div className="buttons">
@@ -116,7 +164,7 @@ class App extends Component {
                     <button>Submit</button>
                   </div>
                   <div>
-                    <button type="button" onClick={this.handleGetFormClear}>
+                    <button type="button" onClick={this.clearExercises}>
                       Clear
                     </button>
                   </div>
@@ -124,12 +172,12 @@ class App extends Component {
               </form>
             </div>
 
-            {/* New User Form */}
+            {/* Add a user */}
             <div className="card">
               <h2 className="masthead">Create a New User</h2>
               <form
-                ref={form => (this.postFormRef = form)}
-                onSubmit={this.handlePostFormSubmit}
+                ref={form => (this.postUserRef = form)}
+                onSubmit={this.handlePostUserSubmit}
               >
                 <code className="response">POST /api/exercise/new-user</code>
 
@@ -145,7 +193,7 @@ class App extends Component {
                     <button>Submit</button>
                   </div>
                   <div>
-                    <button type="button" onClick={this.handlePostFormClear}>
+                    <button type="button" onClick={this.clearPostUser}>
                       Clear
                     </button>
                   </div>
@@ -153,12 +201,12 @@ class App extends Component {
               </form>
             </div>
 
-            {/* New Exercise Form  */}
+            {/* Add an exercise to a user  */}
             <div className="card">
               <h2 className="masthead">Add exercises</h2>
               <form
-                ref={form => (this.postFormRef = form)}
-                onSubmit={this.handlePostFormSubmit}
+                ref={form => (this.postExerciseRef = form)}
+                onSubmit={this.handlePostExerciseSubmit}
               >
                 <code className="response">POST /api/exercise/add</code>
                 <code className="response">
@@ -193,7 +241,7 @@ class App extends Component {
                     <button>Submit</button>
                   </div>
                   <div>
-                    <button type="button" onClick={this.handlePostFormClear}>
+                    <button type="button" onClick={this.clearPostExercise}>
                       Clear
                     </button>
                   </div>
