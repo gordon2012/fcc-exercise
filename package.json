@@ -1,7 +1,7 @@
 {
-  "name": "boilerplate-fcc-microservice",
+  "name": "fcc-exercise",
   "version": "1.0.0",
-  "description": "Boilerplate for Microservices",
+  "description": "Exercise Tracker",
   "main": ".build/server.js",
   "scripts": {
     "clean": "rm -rf ./.build",
@@ -14,15 +14,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/gordon2012/boilerplate-fcc-microservice.git"
+    "url": "git+https://github.com/gordon2012/fcc-exercise.git"
   },
   "keywords": [],
   "author": "",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/gordon2012/boilerplate-fcc-microservice/issues"
+    "url": "https://github.com/gordon2012/fcc-exercise/issues"
   },
-  "homepage": "https://github.com/gordon2012/boilerplate-fcc-microservice#readme",
+  "homepage": "https://github.com/gordon2012/fcc-exercise#readme",
   "dependencies": {
     "babel-polyfill": "^6.26.0",
     "babel-preset-react": "^6.24.1",

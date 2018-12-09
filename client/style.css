@@ -57,6 +57,23 @@ code {
   }
 }
 
+/* Multi input */
+.response.input {
+  border: none;
+  margin: 0;
+}
+.response.input span {
+  flex: 1;
+}
+.response.input input {
+  flex: 2;
+}
+@media (min-width: 500px) {
+  .response.input span {
+    text-align: right;
+  }
+}
+
 /* Layout */
 #root > div {
   display: flex;
