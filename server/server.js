@@ -10,7 +10,7 @@ import connect from './connect';
 import User from './models/user';
 import Exercise from './models/Exercise';
 
-// Front end
+// Frontend
 import App from '../common/App';
 
 dotenv.config();
@@ -41,7 +41,7 @@ app.get('/', function(req, res) {
       <meta http-equiv="x-ua-compatible" content="ie=edge">
       <title>${title} | freeCodeCamp</title>
       <meta name="description" content="">
-      <meta name="viewport" content="width=device-width,  initial-scale=1">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
     </head>
     <body>
       <div id="root">${application}</div>
@@ -52,9 +52,12 @@ app.get('/', function(req, res) {
   res.send(html);
 });
 
-// TODO: Get all users
-app.get('/api/exercise/users', function(req, res) {
-  res.json({ get: 'all users' });
+// Get all users
+app.get('/api/exercise/users', async (req, res) => {
+  const users = await User.find({})
+    .lean()
+    .exec();
+  res.status(200).json(users);
 });
 
 // TODO: Get exercises for a user
@@ -63,22 +66,42 @@ app.get('/api/exercise/log/:userId', function(req, res) {
   res.json({ get: `exercise log for user ${userId}` });
 });
 
-// TODO: Add a user
+// Add a user
 app.post('/api/exercise/new-user', async (req, res) => {
-  const { username } = req.body;
-  res.json({ post: `new user ${username}` });
-  // try {
-  //   const doc = await Foobar.create(req.body);
-  //   res.json(doc);
-  // } catch (e) {
-  //   console.error(e);
-  // }
+  try {
+    const user = await User.create(req.body);
+    res.status(200).json(user.toJSON());
+  } catch (error) {
+    res.status(400).json({ error: 'username must be unique' });
+  }
 });
 
-// TODO: Add an exercise to a user
+// WIP: Add an exercise to a user
 app.post('/api/exercise/add', async (req, res) => {
-  const { _id } = req.body;
-  res.json({ post: `exercise log to user ${_id}` });
+  const { userId } = req.body;
+
+  let user;
+  try {
+    user = await User.findById(userId)
+      .lean()
+      .exec();
+
+    try {
+      await Exercise.create(req.body);
+      const exercises = await Exercise.find({ userId })
+        .lean()
+        .exec();
+
+      // todo: date
+
+      res.status(200).json({ ...user, exercises });
+    } catch (error) {
+      res.status(400).json({ error });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(404).json({ error: 'User not found' });
+  }
 });
 
 export default app;

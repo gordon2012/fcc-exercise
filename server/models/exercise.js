@@ -1,10 +1,11 @@
 import mongoose from 'mongoose';
 import generateModel from './generate-model';
 
-const exerciseSchema = new mongoose.Schema({
+const exerciseSchema = {
   userId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'user'
+    ref: 'user',
+    required: true
   },
   description: {
     type: String,
@@ -18,7 +19,7 @@ const exerciseSchema = new mongoose.Schema({
     type: String,
     required: false
   }
-});
+};
 
 const Exercise = generateModel('exercise', exerciseSchema);
 

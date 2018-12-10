@@ -33,6 +33,9 @@ code {
   background: #c8e6c9;
   margin-bottom: 1em;
 }
+.response.pre {
+  white-space: pre-wrap;
+}
 .response:last-child {
   margin-bottom: 0;
 }

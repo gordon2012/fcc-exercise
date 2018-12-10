@@ -18,34 +18,39 @@ class App extends Component {
     this.postExerciseRef.reset();
   };
 
+  addResponse = json => {
+    console.log(json);
+    this.setState({
+      responses: [JSON.stringify(json, null, 2), ...this.state.responses]
+    });
+  };
+
   // Handlers
   handleGetUsersSubmit = async event => {
     event.preventDefault();
+    event.stopPropagation();
 
     const response = await fetch(`api/exercise/users`);
     const json = await response.json();
 
-    this.setState({
-      responses: [JSON.stringify(json), ...this.state.responses]
-    });
+    this.addResponse(json);
   };
 
   handleGetExercisesSubmit = async event => {
     event.preventDefault();
+    event.stopPropagation();
 
     const data = new FormData(event.target);
     const response = await fetch(`api/exercise/log/${data.get('userId')}`);
     const json = await response.json();
 
-    this.setState({
-      responses: [JSON.stringify(json), ...this.state.responses]
-    });
-
+    this.addResponse(json);
     this.clearExercises();
   };
 
   handlePostUserSubmit = async event => {
     event.preventDefault();
+    event.stopPropagation();
 
     const data = new URLSearchParams(new FormData(event.target));
     const response = await fetch(`api/exercise/new-user`, {
@@ -54,15 +59,13 @@ class App extends Component {
     });
     const json = await response.json();
 
-    this.setState({
-      responses: [JSON.stringify(json), ...this.state.responses]
-    });
-
+    this.addResponse(json);
     this.clearPostUser();
   };
 
   handlePostExerciseSubmit = async event => {
     event.preventDefault();
+    event.stopPropagation();
 
     const data = new URLSearchParams(new FormData(event.target));
     const response = await fetch(`api/exercise/add`, {
@@ -71,10 +74,7 @@ class App extends Component {
     });
     const json = await response.json();
 
-    this.setState({
-      responses: [JSON.stringify(json), ...this.state.responses]
-    });
-
+    this.addResponse(json);
     this.clearPostExercise();
   };
 
@@ -83,7 +83,6 @@ class App extends Component {
   };
 
   // Life Cycle
-
   render() {
     return (
       <div className="app">
@@ -174,7 +173,7 @@ class App extends Component {
 
             {/* Add a user */}
             <div className="card">
-              <h2 className="masthead">Create a New User</h2>
+              <h2 className="masthead">Add a user</h2>
               <form
                 ref={form => (this.postUserRef = form)}
                 onSubmit={this.handlePostUserSubmit}
@@ -184,7 +183,12 @@ class App extends Component {
                 <code className="response">
                   <label htmlFor="username">
                     <span>username</span>
-                    <input type="text" id="username" name="username" />
+                    <input
+                      type="text"
+                      id="username"
+                      name="username"
+                      required="required"
+                    />
                   </label>
                 </code>
 
@@ -201,9 +205,9 @@ class App extends Component {
               </form>
             </div>
 
-            {/* Add an exercise to a user  */}
+            {/* Add an exercise to a user */}
             <div className="card">
-              <h2 className="masthead">Add exercises</h2>
+              <h2 className="masthead">Add an exercise to a user</h2>
               <form
                 ref={form => (this.postExerciseRef = form)}
                 onSubmit={this.handlePostExerciseSubmit}
@@ -211,7 +215,7 @@ class App extends Component {
                 <code className="response">POST /api/exercise/add</code>
                 <code className="response">
                   {[
-                    { name: '_id', label: 'User ID', required: true },
+                    { name: 'userId', label: 'User ID', required: true },
                     {
                       name: 'description',
                       label: 'Description',
@@ -231,7 +235,12 @@ class App extends Component {
                     <div key={field.name} className="response input">
                       <label htmlFor={field.name}>
                         <span>{field.label}</span>
-                        <input type="text" id={field.name} name={field.name} />
+                        <input
+                          type="text"
+                          id={field.name}
+                          name={field.name}
+                          required={field.required}
+                        />
                       </label>
                     </div>
                   ))}
@@ -254,7 +263,7 @@ class App extends Component {
                 <h2 className="masthead">Output</h2>
                 <div className="responses">
                   {this.state.responses.map((response, i) => (
-                    <code className="response" key={i}>
+                    <code className="response pre" key={i}>
                       {response}
                     </code>
                   ))}
