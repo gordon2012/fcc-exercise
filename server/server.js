@@ -60,10 +60,41 @@ app.get('/api/exercise/users', async (req, res) => {
   res.status(200).json(users);
 });
 
+/*
+
+exercise id -> 5c0e09a4da28625214c13eef
+user id     -> 5c0dafb692b3c934fce90fcd
+
+*/
+
 // TODO: Get exercises for a user
-app.get('/api/exercise/log/:userId', function(req, res) {
+app.get('/api/exercise/log/:userId', async (req, res) => {
   const { userId } = req.params;
-  res.json({ get: `exercise log for user ${userId}` });
+
+  let user;
+  try {
+    user = User.findById(userId)
+      .lean()
+      .exec();
+
+    try {
+      const exercises = await Exercise.find({ userId })
+        .lean()
+        .exec();
+
+      if (exercises.length > 0) {
+        res.status(200).json({ ...user, exercises });
+      }
+    } catch (error) {
+      // console.log(error.message);
+      res.status(404).json({ error: error.message });
+    }
+  } catch (error) {
+    // console.error(error.message);
+    res.status(404).json({ error: error.message });
+  }
+
+  // res.status(404).json({ error: 'Not found' });
 });
 
 // Add a user
