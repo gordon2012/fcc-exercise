@@ -8,7 +8,7 @@ import { renderToString } from 'react-dom/server';
 // Database
 import connect from './connect';
 import User from './models/user';
-import Exercise from './models/Exercise';
+import Exercise from './models/exercise';
 
 // Frontend
 import App from '../common/App';
@@ -60,50 +60,40 @@ app.get('/api/exercise/users', async (req, res) => {
   res.status(200).json(users);
 });
 
-/*
-
-exercise id -> 5c0e09a4da28625214c13eef
-user id     -> 5c0dafb692b3c934fce90fcd
-
-*/
-
-// TODO: Get exercises for a user
-app.get('/api/exercise/log/:userId', async (req, res) => {
-  const { userId } = req.params;
+// Get exercises for a user
+// TODO: date range
+app.get('/api/exercise/log', async (req, res) => {
+  const { userId, from, to, limit } = req.query;
 
   let user;
   try {
     user = await User.findById(userId)
       .lean()
       .exec();
-    console.log({ user });
-    // console.log(user);
-    // res.status(200).json(user);
-    // return;
+
+    if(!user) {
+      throw null;
+    }
 
     try {
       const exercises = await Exercise.find({ userId })
         .lean()
+        .limit(parseInt(limit) || 0)
         .exec();
-      console.log({ exercises });
 
       if (exercises.length > 0) {
         res.status(200).json({ ...user, exercises });
       } else {
         res
           .status(404)
-          .json({ error: `No records found for user ${user.username}` });
+          .json(`No records found for user ${user.username}`);
       }
     } catch (error) {
-      // console.log(error.message);
       res.status(404).json({ error: error.message });
     }
   } catch (error) {
-    // console.error(error.message);
-    res.status(404).json({ error: `User ${userId} not found` });
+    res.status(404).json(`User ${userId} not found`);
   }
-
-  // res.status(404).json({ error: 'Not found' });
 });
 
 // Add a user
@@ -116,7 +106,8 @@ app.post('/api/exercise/new-user', async (req, res) => {
   }
 });
 
-// WIP: Add an exercise to a user
+// Add an exercise to a user
+// TODO: validation, date
 app.post('/api/exercise/add', async (req, res) => {
   const { userId } = req.body;
 
@@ -132,7 +123,7 @@ app.post('/api/exercise/add', async (req, res) => {
         .lean()
         .exec();
 
-      // todo: date
+      // date
 
       res.status(200).json({ ...user, exercises });
     } catch (error) {

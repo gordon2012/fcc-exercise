@@ -41,14 +41,9 @@ class App extends Component {
     event.stopPropagation();
 
     const data = new FormData(event.target);
-    console.log(
-      Array.from(data.entries())
-        .slice(1)
-        .filter(e => e[1])
-        .map(e => `[${e[0]}|${e[1]}]`)
-    );
+    const params = new URLSearchParams(data).toString();
 
-    const response = await fetch(`api/exercise/log/${data.get('userId')}`);
+    const response = await fetch(`api/exercise/log?${params}`);
 
     const json = await response.json();
 
