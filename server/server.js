@@ -73,17 +73,26 @@ app.get('/api/exercise/log/:userId', async (req, res) => {
 
   let user;
   try {
-    user = User.findById(userId)
+    user = await User.findById(userId)
       .lean()
       .exec();
+    console.log({ user });
+    // console.log(user);
+    // res.status(200).json(user);
+    // return;
 
     try {
       const exercises = await Exercise.find({ userId })
         .lean()
         .exec();
+      console.log({ exercises });
 
       if (exercises.length > 0) {
         res.status(200).json({ ...user, exercises });
+      } else {
+        res
+          .status(404)
+          .json({ error: `No records found for user ${user.username}` });
       }
     } catch (error) {
       // console.log(error.message);
@@ -91,7 +100,7 @@ app.get('/api/exercise/log/:userId', async (req, res) => {
     }
   } catch (error) {
     // console.error(error.message);
-    res.status(404).json({ error: error.message });
+    res.status(404).json({ error: `User ${userId} not found` });
   }
 
   // res.status(404).json({ error: 'Not found' });

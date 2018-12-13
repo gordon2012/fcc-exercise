@@ -41,7 +41,14 @@ class App extends Component {
     event.stopPropagation();
 
     const data = new FormData(event.target);
+    console.log(
+      Array.from(data.entries())
+        .filter(e => e[1])
+        .map(e => `[${e[0]}|${e[1]}]`)
+    );
+
     const response = await fetch(`api/exercise/log/${data.get('userId')}`);
+
     const json = await response.json();
 
     this.addResponse(json);
@@ -151,12 +158,26 @@ class App extends Component {
                 ref={form => (this.getExercisesRef = form)}
                 onSubmit={this.handleGetExercisesSubmit}
               >
-                <code className="response">{`GET /api/exercise/log/:userId`}</code>
+                <code className="response">{`GET /api/exercise/log/:userId[&from][&to][&limit]`}</code>
                 <code className="response">
-                  <label htmlFor="userId">
-                    <span>{`userId[&from][&to][&limit]`}</span>
-                    <input type="text" id="userId" name="userId" />
-                  </label>
+                  {[
+                    { name: 'userId', required: true },
+                    { name: 'from' },
+                    { name: 'to' },
+                    { name: 'limit' }
+                  ].map(field => (
+                    <div key={field.name} className="response input">
+                      <label htmlFor={field.name}>
+                        <span>{field.name}</span>
+                        <input
+                          type="text"
+                          id={field.name}
+                          name={field.name}
+                          required={field.required}
+                        />
+                      </label>
+                    </div>
+                  ))}
                 </code>
                 <div className="buttons">
                   <div>
