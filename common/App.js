@@ -43,6 +43,7 @@ class App extends Component {
     const data = new FormData(event.target);
     console.log(
       Array.from(data.entries())
+        .slice(1)
         .filter(e => e[1])
         .map(e => `[${e[0]}|${e[1]}]`)
     );
