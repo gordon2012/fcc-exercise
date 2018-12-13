@@ -222,7 +222,10 @@ class App extends Component {
               </form>
             </div>
 
-            {/* Add an exercise to a user */}
+            {/*
+              Add an exercise to a user
+              TODO: duplicate id
+            */}
             <div className="card">
               <h2 className="masthead">Add an exercise to a user</h2>
               <form

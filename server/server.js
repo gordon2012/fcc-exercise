@@ -109,7 +109,15 @@ app.post('/api/exercise/new-user', async (req, res) => {
 // Add an exercise to a user
 // TODO: validation, date
 app.post('/api/exercise/add', async (req, res) => {
-  const { userId } = req.body;
+  const { userId, description, duration, date: inDate } = req.body;
+
+  let date = new Date(inDate);
+  if(!(date instanceof Date && !isNaN(date))) {
+    date = new Date();
+  }
+  // todo: store as mongo date
+
+  // todo: validate description, duration
 
   let user;
   try {
@@ -118,12 +126,10 @@ app.post('/api/exercise/add', async (req, res) => {
       .exec();
 
     try {
-      await Exercise.create(req.body);
+      await Exercise.create({userId, description, duration, date});
       const exercises = await Exercise.find({ userId })
         .lean()
         .exec();
-
-      // date
 
       res.status(200).json({ ...user, exercises });
     } catch (error) {
