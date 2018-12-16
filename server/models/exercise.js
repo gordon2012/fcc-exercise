@@ -16,8 +16,9 @@ const exerciseSchema = {
     required: true
   },
   date: {
-    type: String,
-    required: false
+    type: Date,
+    required: false,
+    default: Date.now
   }
 };
 

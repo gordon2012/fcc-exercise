@@ -71,7 +71,7 @@ app.get('/api/exercise/log', async (req, res) => {
       .lean()
       .exec();
 
-    if(!user) {
+    if (!user) {
       throw null;
     }
 
@@ -84,9 +84,7 @@ app.get('/api/exercise/log', async (req, res) => {
       if (exercises.length > 0) {
         res.status(200).json({ ...user, exercises });
       } else {
-        res
-          .status(404)
-          .json(`No records found for user ${user.username}`);
+        res.status(404).json(`No records found for user ${user.username}`);
       }
     } catch (error) {
       res.status(404).json({ error: error.message });
@@ -107,15 +105,14 @@ app.post('/api/exercise/new-user', async (req, res) => {
 });
 
 // Add an exercise to a user
-// TODO: validation, date
+// TODO: validation
 app.post('/api/exercise/add', async (req, res) => {
   const { userId, description, duration, date: inDate } = req.body;
 
   let date = new Date(inDate);
-  if(!(date instanceof Date && !isNaN(date))) {
+  if (!(date instanceof Date && !isNaN(date))) {
     date = new Date();
   }
-  // todo: store as mongo date
 
   // todo: validate description, duration
 
@@ -126,7 +123,7 @@ app.post('/api/exercise/add', async (req, res) => {
       .exec();
 
     try {
-      await Exercise.create({userId, description, duration, date});
+      await Exercise.create(req.body);
       const exercises = await Exercise.find({ userId })
         .lean()
         .exec();

@@ -71,6 +71,13 @@ class App extends Component {
     event.stopPropagation();
 
     const data = new URLSearchParams(new FormData(event.target));
+
+    for (var pair of data.entries()) {
+      if (!pair[1]) {
+        data.delete(pair[0]);
+      }
+    }
+
     const response = await fetch(`api/exercise/add`, {
       method: 'POST',
       body: data
