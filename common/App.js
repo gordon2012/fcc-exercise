@@ -170,11 +170,11 @@ class App extends Component {
                     { name: 'limit' }
                   ].map(field => (
                     <div key={field.name} className="response input">
-                      <label htmlFor={field.name}>
+                      <label htmlFor={`get-exercises-${field.name}`}>
                         <span>{field.name}</span>
                         <input
                           type="text"
-                          id={field.name}
+                          id={`get-exercises-${field.name}`}
                           name={field.name}
                           required={field.required}
                         />
@@ -260,11 +260,11 @@ class App extends Component {
                     }
                   ].map(field => (
                     <div key={field.name} className="response input">
-                      <label htmlFor={field.name}>
+                      <label htmlFor={`add-exercise-${field.name}`}>
                         <span>{field.label}</span>
                         <input
                           type="text"
-                          id={field.name}
+                          id={`add-exercise-${field.name}`}
                           name={field.name}
                           required={field.required}
                         />
