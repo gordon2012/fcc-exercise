@@ -105,7 +105,6 @@ app.post('/api/exercise/new-user', async (req, res) => {
 });
 
 // Add an exercise to a user
-// TODO: validation
 app.post('/api/exercise/add', async (req, res) => {
   const { userId, description, duration, date: inDate } = req.body;
 
@@ -113,8 +112,6 @@ app.post('/api/exercise/add', async (req, res) => {
   if (!(date instanceof Date && !isNaN(date))) {
     date = new Date();
   }
-
-  // todo: validate description, duration
 
   let user;
   try {
@@ -130,10 +127,9 @@ app.post('/api/exercise/add', async (req, res) => {
 
       res.status(200).json({ ...user, exercises });
     } catch (error) {
-      res.status(400).json({ error });
+      res.status(400).json({ error: error.message });
     }
   } catch (error) {
-    console.error(error);
     res.status(404).json({ error: 'User not found' });
   }
 });
