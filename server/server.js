@@ -61,7 +61,6 @@ app.get('/api/exercise/users', async (req, res) => {
 });
 
 // Get exercises for a user
-// TODO: date range
 app.get('/api/exercise/log', async (req, res) => {
   const { userId, from, to, limit } = req.query;
 
@@ -76,10 +75,30 @@ app.get('/api/exercise/log', async (req, res) => {
     }
 
     try {
-      const exercises = await Exercise.find({ userId })
-        .lean()
-        .limit(parseInt(limit) || 0)
-        .exec();
+      let exercises;
+
+      const fromDate = new Date(from);
+      const toDate = new Date(to);
+      if (
+        !(fromDate instanceof Date && !isNaN(fromDate)) ||
+        !(toDate instanceof Date && !isNaN(toDate)) ||
+        toDate < fromDate
+      ) {
+        // invalid dates
+        exercises = await Exercise.find({ userId })
+          .lean()
+          .limit(parseInt(limit) || 0)
+          .exec();
+      } else {
+        // valid dates
+        exercises = await Exercise.find({
+          userId,
+          date: { $gte: fromDate, $lt: toDate }
+        })
+          .lean()
+          .limit(parseInt(limit) || 0)
+          .exec();
+      }
 
       if (exercises.length > 0) {
         res.status(200).json({ ...user, exercises });
