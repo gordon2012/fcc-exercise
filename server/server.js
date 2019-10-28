@@ -24,7 +24,7 @@ app.get('/', function(req, res) {
             ? 'client.js'
             : 'http://localhost:3000/client.js';
 
-    const title = 'Microservice Boilerplate';
+    const title = 'Exercise Tracker | freeCodeCamp';
     const application = renderToString(<App />);
 
     const html = `<!doctype html>
