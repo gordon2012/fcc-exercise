@@ -8,12 +8,13 @@ import 'babel-polyfill';
 import connect from './connect';
 import userSchema from './models/user';
 import exerciseSchema from './models/exercise';
-import App from '../common/App';
+import App from '../client/App';
 
 const app = express();
 
 app.use(cors({ optionSuccessStatus: 200 }));
 app.use(express.static('.build/public'));
+app.use(express.static('public'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -34,6 +35,7 @@ app.get('/', function(req, res) {
                 <title>${title} | freeCodeCamp</title>
                 <meta name="description" content="">
                 <meta name="viewport" content="width=device-width, initial-scale=1">
+                <link rel="stylesheet" type="text/css" href="/style.css" />
             </head>
             <body>
                 <div id="root">${application}</div>

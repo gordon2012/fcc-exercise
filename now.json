@@ -1,0 +1,47 @@
+{
+    "name": "fcc-exercise",
+    "version": 2,
+
+    "env": {
+        "ATLAS_URI": "@exercise-atlas-uri"
+    },
+
+    "builds": [
+        { "src": ".build/server.js", "use": "@now/node-server" },
+        { "src": ".build/client.js", "use": "@now/static" },
+        { "src": "public/style.css", "use": "@now/static" }
+    ],
+
+    "routes": [
+        {
+            "src": "/api/exercise/users",
+            "dest": "/.build/server.js",
+            "methods": ["GET"]
+        },
+        {
+            "src": "/api/exercise/log",
+            "dest": "/.build/server.js",
+            "methods": ["GET"]
+        },
+        {
+            "src": "/api/exercise/new-user",
+            "dest": "/.build/server.js",
+            "methods": ["POST"]
+        },
+        {
+            "src": "/api/exercise/add",
+            "dest": "/.build/server.js",
+            "methods": ["POST"]
+        },
+
+        {
+            "src": "/",
+            "headers": {
+                "cache-control": "s-maxage=0"
+            },
+            "dest": "/.build/server.js"
+        },
+        { "src": "/client.js", "dest": "/.build/client.js" },
+        { "src": "/style.css", "dest": "/public/style.css" }
+    ]
+}
