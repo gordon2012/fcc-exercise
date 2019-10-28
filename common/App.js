@@ -3,7 +3,12 @@ import 'babel-polyfill';
 
 class App extends Component {
   state = {
-    responses: []
+    responses: {
+        users: [],
+        log: [],
+        'new-user': [],
+        add: []
+    }
   };
 
   clearExercises = () => {
@@ -18,10 +23,17 @@ class App extends Component {
     this.postExerciseRef.reset();
   };
 
-  addResponse = json => {
-    console.log(json);
-    this.setState({
-      responses: [JSON.stringify(json, null, 2), ...this.state.responses]
+  addResponse = (json, type) => {
+    this.setState(prevState => {
+        return {
+            responses: {
+                ...prevState.responses,
+                [type]: [
+                    {response: json},
+                    ...prevState.responses[type]
+                ]
+            }
+        };
     });
   };
 
@@ -33,7 +45,7 @@ class App extends Component {
     const response = await fetch(`api/exercise/users`);
     const json = await response.json();
 
-    this.addResponse(json);
+    this.addResponse(json, 'users');
   };
 
   handleGetExercisesSubmit = async event => {
@@ -47,7 +59,7 @@ class App extends Component {
 
     const json = await response.json();
 
-    this.addResponse(json);
+    this.addResponse(json, 'log');
     this.clearExercises();
   };
 
@@ -62,7 +74,7 @@ class App extends Component {
     });
     const json = await response.json();
 
-    this.addResponse(json);
+    this.addResponse(json, 'new-user');
     this.clearPostUser();
   };
 
@@ -84,15 +96,22 @@ class App extends Component {
     });
     const json = await response.json();
 
-    this.addResponse(json);
+    this.addResponse(json, 'add');
     this.clearPostExercise();
   };
 
-  handleResponsesClear = () => {
-    this.setState({ responses: [] });
+  handleResponsesClear = (type) => {
+    this.setState(prevState => {
+        return {
+            responses: {
+                ...prevState.responses,
+                [type]: []
+            }
+        };
+    });
+
   };
 
-  // Life Cycle
   render() {
     return (
       <div className="app">
@@ -147,11 +166,29 @@ class App extends Component {
               <form onSubmit={this.handleGetUsersSubmit}>
                 <code className="response">{`GET /api/exercise/users`}</code>
                 <div className="buttons">
-                  <div>
-                    <button>Submit</button>
-                  </div>
+                    <div>
+                        <button>Submit</button>
+                    </div>
+                    <div>
+                        <button type="button" onClick={() => this.handleResponsesClear('users')}>
+                            Clear
+                        </button>
+                    </div>
                 </div>
               </form>
+
+                {this.state.responses.users.length > 0 ? (
+                    <div>
+                        <h2 className="masthead">Output</h2>
+                        <div className="responses">
+                            {this.state.responses.users.map((response, i) => (
+                                <code className="response pre" key={i}>
+                                {JSON.stringify(response, null, 2)}
+                                </code>
+                            ))}
+                        </div>
+                    </div>
+                ) : null}
             </div>
 
             {/* Get exercises for a user */}
@@ -183,16 +220,29 @@ class App extends Component {
                   ))}
                 </code>
                 <div className="buttons">
-                  <div>
-                    <button>Submit</button>
-                  </div>
-                  <div>
-                    <button type="button" onClick={this.clearExercises}>
-                      Clear
-                    </button>
-                  </div>
+                    <div>
+                        <button>Submit</button>
+                    </div>
+                    <div>
+                        <button type="button" onClick={() => this.handleResponsesClear('log')}>
+                            Clear
+                        </button>
+                    </div>
                 </div>
               </form>
+
+                {this.state.responses.log.length > 0 ? (
+                    <div>
+                        <h2 className="masthead">Output</h2>
+                        <div className="responses">
+                            {this.state.responses.log.map((response, i) => (
+                                <code className="response pre" key={i}>
+                                {JSON.stringify(response, null, 2)}
+                                </code>
+                            ))}
+                        </div>
+                    </div>
+                ) : null}
             </div>
 
             {/* Add a user */}
@@ -217,22 +267,32 @@ class App extends Component {
                 </code>
 
                 <div className="buttons">
-                  <div>
-                    <button>Submit</button>
-                  </div>
-                  <div>
-                    <button type="button" onClick={this.clearPostUser}>
-                      Clear
-                    </button>
-                  </div>
+                    <div>
+                        <button>Submit</button>
+                    </div>
+                    <div>
+                        <button type="button" onClick={() => this.handleResponsesClear('new-user')}>
+                            Clear
+                        </button>
+                    </div>
                 </div>
               </form>
+
+              {this.state.responses['new-user'].length > 0 ? (
+                    <div>
+                        <h2 className="masthead">Output</h2>
+                        <div className="responses">
+                            {this.state.responses['new-user'].map((response, i) => (
+                                <code className="response pre" key={i}>
+                                {JSON.stringify(response, null, 2)}
+                                </code>
+                            ))}
+                        </div>
+                    </div>
+                ) : null}
             </div>
 
-            {/*
-              Add an exercise to a user
-              TODO: duplicate id
-            */}
+            {/* Add an exercise to a user */}
             <div className="card">
               <h2 className="masthead">Add an exercise to a user</h2>
               <form
@@ -273,37 +333,30 @@ class App extends Component {
                   ))}
                 </code>
                 <div className="buttons">
-                  <div>
-                    <button>Submit</button>
-                  </div>
-                  <div>
-                    <button type="button" onClick={this.clearPostExercise}>
-                      Clear
-                    </button>
-                  </div>
+                    <div>
+                        <button>Submit</button>
+                    </div>
+                    <div>
+                        <button type="button" onClick={() => this.handleResponsesClear('add')}>
+                            Clear
+                        </button>
+                    </div>
                 </div>
               </form>
-            </div>
 
-            {this.state.responses.length > 0 ? (
-              <div className="card">
-                <h2 className="masthead">Output</h2>
-                <div className="responses">
-                  {this.state.responses.map((response, i) => (
-                    <code className="response pre" key={i}>
-                      {response}
-                    </code>
-                  ))}
-                  <div className="buttons">
+              {this.state.responses.add.length > 0 ? (
                     <div>
-                      <button type="button" onClick={this.handleResponsesClear}>
-                        Clear
-                      </button>
+                        <h2 className="masthead">Output</h2>
+                        <div className="responses">
+                            {this.state.responses.add.map((response, i) => (
+                                <code className="response pre" key={i}>
+                                {JSON.stringify(response, null, 2)}
+                                </code>
+                            ))}
+                        </div>
                     </div>
-                  </div>
-                </div>
-              </div>
-            ) : null}
+                ) : null}
+            </div>
           </div>
         </main>
         <footer>
